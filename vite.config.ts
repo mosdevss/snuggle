@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   return defineConfig({
     base: BASE,
     resolve: { tsconfigPaths: true },
+    preview: { host: "127.0.0.1" },
     plugins: [
       tanstackStart({
         router: { basepath: BASE },

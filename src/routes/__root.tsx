@@ -1,4 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
 
 import { NotFound } from '../components/NotFound'
 
@@ -37,7 +37,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <div className="app-layout">
-          <main className="app-layout__main">{children}</main>
+          <Link to='/'>Home</Link>
+          <Link to='/about'>About</Link>
+          <Link to='/contact'>Contact</Link>
+          <main>{children}</main>
         </div>
 
         <Scripts />
