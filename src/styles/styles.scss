@@ -1,0 +1,12 @@
+// 7-1 pattern entry point - the only file routes should import.
+// @use (not @forward) each folder's _index.scss so members stay namespaced
+// under that folder's name, e.g. layout.$something. Order matters: base
+// styles should land before layout/components so cascade origin stays
+// predictable.
+@use "abstracts";
+@use "vendors";
+@use "base";
+@use "layout";
+@use "components";
+@use "pages";
+@use "themes";

@@ -1,0 +1,4 @@
+// Forwards every abstract partial as a single entry point for this folder.
+// Consumers do: @use "../abstracts" as abstracts;
+@forward "variables";
+@forward "mixins";

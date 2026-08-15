@@ -1,0 +1,79 @@
+# .github/workflows/deploy.yml
+#
+# Requires:
+#   1. Static prerendering enabled in vite.config.ts, e.g.:
+#        tanstackStart({ prerender: { enabled: true, crawlLinks: true } })
+#      Without it, `pnpm build` only emits client JS/CSS assets, not
+#      per-route HTML, and GitHub Pages (a static host, no SSR runtime) has
+#      nothing to serve for direct navigation to any route but "/".
+#   2. A real, matchable src/routes/404.tsx (assets/404.route.tsx) so the
+#      prerenderer produces dist/client/404/index.html, and
+#      scripts/generate-404.mjs to copy it to dist/client/404.html - the
+#      file GitHub Pages serves for any path it can't resolve. A plain
+#      `cp index.html 404.html` would silently serve the homepage instead
+#      of an actual not-found page.
+#   3. If deploying to a project site (https://<user>.github.io/<repo>/,
+#      not a custom domain or user/org site), vite.config.ts also needs a
+#      matching `base` / `router.basepath` / `client.base` - see
+#      assets/vite.config.base-path.ts.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (prerendered static output)
+        run: pnpm build
+
+      - name: Generate 404.html from the prerendered /404 route
+        run: node scripts/generate-404.mjs
+
+      - name: Add .nojekyll
+        run: touch dist/client/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist/client
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

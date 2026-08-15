@@ -1,0 +1,8 @@
+@use "../abstracts" as abstracts;
+
+body {
+  font-family: system-ui, sans-serif;
+  color: abstracts.$color-text;
+  background-color: abstracts.$color-bg;
+  line-height: 1.5;
+}

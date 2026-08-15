@@ -1,0 +1,10 @@
+// Minimal, opinionated reset. Extend as needed.
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
